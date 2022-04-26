@@ -1,0 +1,2047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vo-dml:model xmlns:vo-dml="http://www.ivoa.net/xml/VODML/v1"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.ivoa.net/xml/VODML/v1 http://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/xsd/vo-dml-v1.0.xsd"
+              version="1.0">
+  <name>SimDM</name>
+  <description>This is the data model for describing simulations, the code that produced them and other related resources. It is to be used by protocol specifications for discovering theory data products and web services with which these can be accessed. An example of these are the Simulation Database (SimDB) spec and the family of protocols to be defined in the Simulation Data Access Layer (SimDAL).
+This data model is a specification of the IVOA Theory Interest Group. 
+</description>
+  <uri/>
+  <title>Simulation Database</title>
+  <author>Gerard Lemson</author>
+  <author>Laurent Bourge</author>
+  <author>Rick Wagner</author>
+  <version>0.x</version>
+  <lastModified>2018-05-24T20:32:18</lastModified>
+  <import>
+    <name>ivoa</name>
+    <url>IVOA-v1.0.vo-dml.xml</url>
+    <documentationURL>http://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html</documentationURL>
+  </import>
+
+  <package>
+    <vodml-id>meta</vodml-id>
+    <name>meta</name>
+    <description>This package defines some very basic "meta" types such as the basic DataType enumerations etc.</description>
+    <enumeration>
+      <vodml-id>meta.Cardinality</vodml-id>
+      <name>Cardinality</name>
+      <description>This enumeration contains the possible values for the cardinality attribute of a Field definition.
+</description>
+      <literal>
+        <vodml-id>meta.Cardinality.OPTIONAL</vodml-id>
+        <name>OPTIONAL</name>
+        <description>Corresponds to 'Optional element'</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.Cardinality.MANDATORY</vodml-id>
+        <name>MANDATORY</name>
+        <description>Corresponds to 'Mandatory element'</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.Cardinality.ZERO_MANY</vodml-id>
+        <name>ZERO_MANY</name>
+        <description>Corresponds to 'Multiple but maybe Optional element'</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.Cardinality.ONE_MANY</vodml-id>
+        <name>ONE_MANY</name>
+        <description>Corresponds to 'Multiple with at least one element'</description>
+      </literal>
+    </enumeration>
+
+    <enumeration>
+      <vodml-id>meta.DataType</vodml-id>
+      <name>DataType</name>
+      <description>The DataType enumeration lists the available values for the datatype attributes used in the definition of metadata fields such as Property and InputParameter. 
+The values represent rather abstract data types. For example no distinction is made between different representations of integer (short, int, long) or floating point (float, double) types. Instead the mathematical number fields integer and real are used, together with rational and complex. 
+Alternative representations or usages of this model might add such details. 
+
+
+</description>
+      <literal>
+        <vodml-id>meta.DataType.boolean</vodml-id>
+        <name>boolean</name>
+        <description>A standard boolean type, with values 'true' and 'false', possibly represented differently in physical representations of the model.</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.DataType.complex</vodml-id>
+        <name>complex</name>
+        <description>A standard complex type. Here no limits on accuracy of constituent Re and Im parts is made, they are assumed to be real.
+</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.DataType.datetime</vodml-id>
+        <name>datetime</name>
+        <description>Represents an exact time on an exact, given date. No accuracy is assumed.</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.DataType.real</vodml-id>
+        <name>real</name>
+        <description>A floating point datatype, without impied accuracy.</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.DataType.integer</vodml-id>
+        <name>integer</name>
+        <description>An integer datatype, without implied accuracy.</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.DataType.rational</vodml-id>
+        <name>rational</name>
+        <description>A rational datatype, consisting of two integers representing the numerator and denominator.
+</description>
+      </literal>
+      <literal>
+        <vodml-id>meta.DataType.string</vodml-id>
+        <name>string</name>
+        <description>A standard string datatype consisting of any type of character.</description>
+      </literal>
+    </enumeration>
+
+  </package>
+
+
+
+  <package>
+    <vodml-id>object</vodml-id>
+    <name>object</name>
+    <description>This package contains SimDM/ObjectType and classes used in its definition.
+These classes allow users to describe structured objects that are used in, or produced by the SImDM/Protocols. </description>
+    <enumeration>
+      <vodml-id>object.RelationshipType</vodml-id>
+      <name>RelationshipType</name>
+      <description>Type of relationship between an ObjectType and the related object type.
+</description>
+      <literal>
+        <vodml-id>object.RelationshipType.composition</vodml-id>
+        <name>composition</name>
+        <description>Represents the usual UML-like composition relation.</description>
+      </literal>
+      <literal>
+        <vodml-id>object.RelationshipType.reference</vodml-id>
+        <name>reference</name>
+        <description>Represents a 0..1 relation between an object (the referree) and the related object (the reference). Indicates a general dependency. Example, relations between a galaxy and its descendant in a merger tree, or between a source catalogue and the image it was extracted from.</description>
+      </literal>
+    </enumeration>
+
+    <objectType abstract="true">
+      <vodml-id>object.Field</vodml-id>
+      <name>Field</name>
+      <description>Represents a generic field like object.</description>
+      <attribute>
+        <vodml-id>object.Field.name</vodml-id>
+        <name>name</name>
+        <description>the name of this parameter or property.
+Ex: omegaLambda, particleMass, linking length
+</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Field.datatype</vodml-id>
+        <name>datatype</name>
+        <description>the data type of this parameter or property</description>
+        <datatype>
+          <vodml-ref>SimDM:meta.DataType</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Field.cardinality</vodml-id>
+        <name>cardinality</name>
+        <description>The cardinality of this parameter or property</description>
+        <datatype>
+          <vodml-ref>SimDM:meta.Cardinality</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Field.description</vodml-id>
+        <name>description</name>
+        <description>Short description of this parameter or property</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Field.isEnumerated</vodml-id>
+        <name>isEnumerated</name>
+        <description>indicates if this parameter or property only accept values coming from a list of valid values defined by the validValue collection</description>
+        <datatype>
+          <vodml-ref>ivoa:boolean</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <composition>
+        <vodml-id>object.Field.validValue</vodml-id>
+        <name>validValue</name>
+        <description>List of possible values : only defined when isEnumerated = true</description>
+        <datatype>
+          <vodml-ref>SimDM:object.ValidValue</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+    </objectType>
+
+    <objectType abstract="true">
+      <vodml-id>object.ObjectType</vodml-id>
+      <name>ObjectType</name>
+      <description>This class represents and abstract object type, and can thus be seen as a meta-modelling construct.
+It allows model instances that represent complex object definitions.</description>
+      <attribute>
+        <vodml-id>object.ObjectType.name</vodml-id>
+        <name>name</name>
+        <description>The name of this object type.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.ObjectType.description</vodml-id>
+        <name>description</name>
+        <description>Short description of this object type.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <composition>
+        <vodml-id>object.ObjectType.property</vodml-id>
+        <name>property</name>
+        <description>Collection of properties.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.Property</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+      <composition>
+        <vodml-id>object.ObjectType.relationship</vodml-id>
+        <name>relationship</name>
+        <description>Collection of relations to object types that may be contained or aggregated by this object type or referenced by it.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.Relationship</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+      <composition>
+        <vodml-id>object.ObjectType.propertyGroup</vodml-id>
+        <name>propertyGroup</name>
+        <description>Collection of property groups.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.PropertyGroup</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+    </objectType>
+
+    <objectType>
+      <vodml-id>object.Property</vodml-id>
+      <name>Property</name>
+      <description>The properties of an object. Similar to the FIELD in a VOTable</description>
+      <extends>
+        <vodml-ref>SimDM:object.Field</vodml-ref>
+      </extends>
+      <attribute>
+        <vodml-id>object.Property.label</vodml-id>
+        <name>label</name>
+        <description>The concept represented by this property. This concept should be narrower than the broadestSKOSConcept.</description>
+        <datatype>
+          <vodml-ref>ivoa:anyURI</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+        <semanticconcept>
+          <topConcept>http://purl.org/astronomy/vocab/PhysicalQuantities/PhysicalQuantity</topConcept>
+          <vocabularyURI>http://purl.org/astronomy/vocab/PhysicalQuantities</vocabularyURI>
+        </semanticconcept>
+      </attribute>
+    </objectType>
+
+    <objectType>
+      <vodml-id>object.PropertyGroup</vodml-id>
+      <name>PropertyGroup</name>
+      <description>This class represents a naturla grouping of properties on the object type.
+Is used for presentation purposes in a browsing environment.</description>
+      <attribute>
+        <vodml-id>object.PropertyGroup.name</vodml-id>
+        <name>name</name>
+        <description>Name of this paarameter grouping.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.PropertyGroup.description</vodml-id>
+        <name>description</name>
+        <description>Description of this group.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <composition>
+        <vodml-id>object.PropertyGroup.member</vodml-id>
+        <name>member</name>
+        <description>Collection of members of this parameter grouping.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.PropertyGroupMember</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+    </objectType>
+
+    <objectType>
+      <vodml-id>object.PropertyGroupMember</vodml-id>
+      <name>PropertyGroupMember</name>
+      <description>Assocuiative object that represents a member in a property group.</description>
+      <reference>
+        <vodml-id>object.PropertyGroupMember.property</vodml-id>
+        <name>property</name>
+        <description>Reference to the actual property this class associates to a property group.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.Property</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </reference>
+    </objectType>
+
+    <objectType>
+      <vodml-id>object.Relationship</vodml-id>
+      <name>Relationship</name>
+      <description>This class assists in the definition of an object hierarchy by associating different objects. The type of relationship is borrowed loosely from UML, and can represent a composition, aggregation or reference, as defined by the relationshipType attribute.
+An example is the composition relationship between a image and its pixels, or the aggregation of a FOF group and its constituent particles. </description>
+      <attribute>
+        <vodml-id>object.Relationship.name</vodml-id>
+        <name>name</name>
+        <description>Name of the variable representing the relationship on the containing parent object type.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Relationship.description</vodml-id>
+        <name>description</name>
+        <description>Describes the relation between the parent and child object type.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Relationship.relationshipType</vodml-id>
+        <name>relationshipType</name>
+        <description>This attributes indicates the type of relaion between the parent and the related object.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.RelationshipType</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.Relationship.cardinality</vodml-id>
+        <name>cardinality</name>
+        <description>The cardinality/multiplicity of the child object in the containing object.</description>
+        <datatype>
+          <vodml-ref>SimDM:meta.Cardinality</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <reference>
+        <vodml-id>object.Relationship.relatedObjectType</vodml-id>
+        <name>relatedObjectType</name>
+        <description>Reference to the ObjectType that is the child in the hierarchical parent-child relation.</description>
+        <datatype>
+          <vodml-ref>SimDM:object.ObjectType</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </reference>
+    </objectType>
+
+    <objectType>
+      <vodml-id>object.ValidValue</vodml-id>
+      <name>ValidValue</name>
+      <description>This represents a value for an enumerated parameter or property</description>
+      <attribute>
+        <vodml-id>object.ValidValue.value</vodml-id>
+        <name>value</name>
+        <description>the value as string : can be converted to the correct datatype of the asociated parameter or property</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.ValidValue.description</vodml-id>
+        <name>description</name>
+        <description>A description of this value.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>object.ValidValue.title</vodml-id>
+        <name>title</name>
+        <description>Short name / alias for this value (useful in GUI)</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+    </objectType>
+
+  </package>
+
+
+
+  <package>
+    <vodml-id>resource</vodml-id>
+    <name>resource</name>
+    <description>This is a root package of the SimDM data model.
+It contains all packages defining the main entities of the model as subpackages.
+It contains the SimDM/Resource and SimDM/Party root entity classes and various data types and enumerations. It depends on the object package.</description>
+    <enumeration>
+      <vodml-id>resource.ContactRole</vodml-id>
+      <name>ContactRole</name>
+      <description>The ContactRole enumeration contains the different roles a SimDM/Party can play in the creation or publishing of a SimDM/Resource.</description>
+      <literal>
+        <vodml-id>resource.ContactRole.owner</vodml-id>
+        <name>owner</name>
+        <description>Role indicating that a certain SimDM/Party owns the SimDM/Resource. </description>
+      </literal>
+      <literal>
+        <vodml-id>resource.ContactRole.creator</vodml-id>
+        <name>creator</name>
+        <description>Role indicating that a certain SimDM/Party created the SimDM/Resource.</description>
+      </literal>
+      <literal>
+        <vodml-id>resource.ContactRole.publisher</vodml-id>
+        <name>publisher</name>
+        <description>Role indicating that a certain SimDM/Party published the SimDM/Resource in a SimDB repository for example.</description>
+      </literal>
+      <literal>
+        <vodml-id>resource.ContactRole.contributor</vodml-id>
+        <name>contributor</name>
+        <description>Role indicating that a certain SimDM/Party made some otherwise unspecified contribution to the creation of the SimDM/Resource. </description>
+      </literal>
+    </enumeration>
+
+    <objectType>
+      <vodml-id>resource.Contact</vodml-id>
+      <name>Contact</name>
+      <description>This class connects a Party to a resource. 
+It indicates the role the party plays on the resource, for example creator, owner or publisher.</description>
+      <attribute>
+        <vodml-id>resource.Contact.role</vodml-id>
+        <name>role</name>
+        <description>The role this contact plays in the Resource</description>
+        <datatype>
+          <vodml-ref>SimDM:resource.ContactRole</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <reference>
+        <vodml-id>resource.Contact.party</vodml-id>
+        <name>party</name>
+        <description>Reference to the  Party that the Contact associates to the Resource.</description>
+        <datatype>
+          <vodml-ref>SimDM:resource.Party</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </reference>
+    </objectType>
+
+    <objectType>
+      <vodml-id>resource.Party</vodml-id>
+      <name>Party</name>
+      <description>Information that describes a Party, that is a person/individual or possibly an organisation.</description>
+      <attribute>
+        <vodml-id>resource.Party.name</vodml-id>
+        <name>name</name>
+        <description>the name or title of the contact person.
+
+This can be a person's name, e.g. "John P. Jones" or a group, "Archive Support Team".</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Party.email</vodml-id>
+        <name>email</name>
+        <description>the contact email address</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Party.address</vodml-id>
+        <name>address</name>
+        <description>the contact mailing address
+
+All components of the mailing address are given in one string, e.g. "3700 San Martin Drive, Baltimore, MD 21218 USA".</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Party.telephone</vodml-id>
+        <name>telephone</name>
+        <description>the contact telephone number
+
+Complete international dialing codes should be given, e.g. "+1-410-338-1234".</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+    </objectType>
+
+    <objectType>
+      <vodml-id>resource.Project</vodml-id>
+      <name>Project</name>
+      <description>A SimDM/Project is an aggregation of SimDM/Resource-s that belong together, for example because they have been produced together in the course of a scientific project. 
+Examples are parameter studies where a large number of simulations is run with slightly varying parameter settings. But also a single large simulation with a number of post-processing results can be gathers in this way. 
+
+It is assumed that SimDM/Project are generally "big enough" to qualify to be represented as a full-fledged Registry/Resource in an IVOA Registry. This possibility was on of the reasons to add this concept to the model.</description>
+      <extends>
+        <vodml-ref>SimDM:resource.Resource</vodml-ref>
+      </extends>
+      <composition>
+        <vodml-id>resource.Project.resource</vodml-id>
+        <name>resource</name>
+        <description>Collection of associatiions to the resources that make up this project.</description>
+        <datatype>
+          <vodml-ref>SimDM:resource.ProjectResource</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+    </objectType>
+
+    <objectType>
+      <vodml-id>resource.ProjectResource</vodml-id>
+      <name>ProjectResource</name>
+      <description>Associative class between a SimDM/Project and its constitutent SimDM/Resource-s.</description>
+      <reference>
+        <vodml-id>resource.ProjectResource.resource</vodml-id>
+        <name>resource</name>
+        <description>Reference to another SimDM/Resource that is included in the containing SimDM/Project.</description>
+        <datatype>
+          <vodml-ref>SimDM:resource.Resource</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </reference>
+    </objectType>
+
+    <objectType abstract="true">
+      <vodml-id>resource.Resource</vodml-id>
+      <name>Resource</name>
+      <description>This class represents the main resources defined by the Simulation Data Model in the same way as the Registry/Resource class represents resources in registries. It is the base class of specialisations SimDM/Protocol, SimDM/Experiment, SimDM/Project and SimDM/Service.
+These resources are the root entities that would get registered in a Simulation Database for example. They are also represented by root element declarations in XML schema serialisations of the model.  
+This class is a thin copy of the Registry/Resource and borrows some of its elements. It *is-not-a* Registry Resource in the sense of inheritance. In particular a SimDM/Resource has a more refined and targeted content model. Also, SimDM/Resource-s are in general (much) more fine grained than Registry/Resource-s and would not qualify to be registered in an IVOA Registry.
+It will howevere be possible to transform certain SimDM/Resource-s into Registry/Resource-s.</description>
+      <attribute>
+        <vodml-id>resource.Resource.name</vodml-id>
+        <name>name</name>
+        <description>For Protocol :
+The name by which this simulator is commonly known. 
+Ex: Gadget, Flash
+
+For Project :
+the name of the project
+
+For Experiment :
+the name of this experiment
+</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Resource.description</vodml-id>
+        <name>description</name>
+        <description>A description of this resource.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Resource.referenceURL</vodml-id>
+        <name>referenceURL</name>
+        <description>a URL to a web page describing the resource.</description>
+        <datatype>
+          <vodml-ref>ivoa:anyURI</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Resource.created</vodml-id>
+        <name>created</name>
+        <description>The UTC date and time this resource was created in the real world.</description>
+        <datatype>
+          <vodml-ref>ivoa:datetime</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Resource.updated</vodml-id>
+        <name>updated</name>
+        <description>The UTC date and time this resource was updated in the real world.</description>
+        <datatype>
+          <vodml-ref>ivoa:datetime</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.Resource.status</vodml-id>
+        <name>status</name>
+        <description>a tag indicating whether this resource is believed to be still actively maintained.</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <composition>
+        <vodml-id>resource.Resource.contact</vodml-id>
+        <name>contact</name>
+        <description>The collection of contacts for a Reource.</description>
+        <datatype>
+          <vodml-ref>SimDM:resource.Contact</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>1</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+      <composition>
+        <vodml-id>resource.Resource.target</vodml-id>
+        <name>target</name>
+        <description>This collection of Target, describing the different targets/goals/objectives of this Experiment. 
+</description>
+        <datatype>
+          <vodml-ref>SimDM:resource.Target</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>-1</maxOccurs>
+        </multiplicity>
+      </composition>
+    </objectType>
+
+    <objectType abstract="true">
+      <vodml-id>resource.Target</vodml-id>
+      <name>Target</name>
+      <description>Represents the scientific goal associated to a SimDM/Resource. This can be the goal of an experiment or project, or the type of object that a particular protocol will always produce. Is made concrete by suclasses representing objects or processes. We model a Target as "being an" ObjectType, which allows one to give a more detailed representation of its properties. The target is important as it represents one of the main questions scientists will ask about an experiment: what kind of astrophysical object or system or process was being simulated or modelled.</description>
+      <extends>
+        <vodml-ref>SimDM:object.ObjectType</vodml-ref>
+      </extends>
+    </objectType>
+
+    <objectType>
+      <vodml-id>resource.TargetObjectType</vodml-id>
+      <name>TargetObjectType</name>
+      <description>This class represents the actual system that is being simulated. Instances of this object should correspond to physical objects and/or systems. They should be the answer to queries such as, “what does this simulation simulate?”</description>
+      <extends>
+        <vodml-ref>SimDM:resource.Target</vodml-ref>
+      </extends>
+      <attribute>
+        <vodml-id>resource.TargetObjectType.multiplicity</vodml-id>
+        <name>multiplicity</name>
+        <description>Indication on how many objects of this type are being modelled.</description>
+        <datatype>
+          <vodml-ref>SimDM:meta.Cardinality</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.TargetObjectType.identityName</vodml-id>
+        <name>identityName</name>
+        <description>If the target object type referes to a real object, this attribute allows one to indicate which object. This is performed by a URI that should identify the object in the Ontology of SimbadIdentifiedNames
+In some cases a real identified object in the universe is being modelled. If that is the case, this attribute allows that object to be identified. We assume a list of such objects may be provided through some means, embodied by the IdentifiedObject data type.
+Ex: Galaxy, Antennae, M31.
+</description>
+        <datatype>
+          <vodml-ref>ivoa:string</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+      </attribute>
+      <attribute>
+        <vodml-id>resource.TargetObjectType.label</vodml-id>
+        <name>label</name>
+        <description>Represents a concept in a SKOS vocabulary of astronomical and astrophysical object types.</description>
+        <datatype>
+          <vodml-ref>ivoa:anyURI</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+        <semanticconcept>
+          <topConcept>http://purl.org/astronomy/vocab/AstronomicalObjects/AstronomicalObject</topConcept>
+          <vocabularyURI>http://purl.org/astronomy/vocab/AstronomicalObjects</vocabularyURI>
+        </semanticconcept>
+      </attribute>
+    </objectType>
+
+    <objectType>
+      <vodml-id>resource.TargetProcess</vodml-id>
+      <name>TargetProcess</name>
+      <description>This class represents the fact that some simulations are run with the goal (Target) to investigate physical processes, rather than simulation specific objects or systems. Instances of this class can be used to describe this. For example one may study "turbulence", or "gravitational cluster" or "galaxy formation".</description>
+      <extends>
+        <vodml-ref>SimDM:resource.Target</vodml-ref>
+      </extends>
+      <attribute>
+        <vodml-id>resource.TargetProcess.label</vodml-id>
+        <name>label</name>
+        <description>A term from the AstroJournalSubjectKeywords ontology.</description>
+        <datatype>
+          <vodml-ref>ivoa:anyURI</vodml-ref>
+        </datatype>
+        <multiplicity>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+        </multiplicity>
+        <semanticconcept>
+          <topConcept>http://purl.org/astronomy/vocab/PhysicalProcesses/PhysicalProcess</topConcept>
+          <vocabularyURI>http://purl.org/astronomy/vocab/PhysicalProcesses</vocabularyURI>
+        </semanticconcept>
+      </attribute>
+    </objectType>
+
+
+
+    <package>
+      <vodml-id>resource.dal</vodml-id>
+      <name>dal</name>
+      <description>This package holds on to SimDM/Service and classes used in its definition. It represents functions for accessing the physical resources described by the model such as the results of simulations and post-processing experiments.</description>
+      <objectType>
+        <vodml-id>resource.dal.AccessibleResource</vodml-id>
+        <name>AccessibleResource</name>
+        <description>The AccessibleResource class represents an association between the containing SimDM/Service and the SimDM/Resource-s that are being made accessible by that  service.</description>
+        <attribute>
+          <vodml-id>resource.dal.AccessibleResource.description</vodml-id>
+          <name>description</name>
+          <description>Description of how the particular SimDM/Resource referenced by this object is made available by the parent SimDM/Service.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.dal.AccessibleResource.accessURI</vodml-id>
+          <name>accessURI</name>
+          <description>Direct URI for accessing the referenced SimDM/Resource using the parent service.
+The parent service has a baseURL through which one can access the service interface. From there one may be able to browse through all SimDM/Resource-s that are made available, but a specific (data access) protocol to reach a given SimDM/Resource or how to browse these SimDM/Resource-s is not defined by this model. IF it is possible to access the SimDM/Resource directly through the SimDM/Service, for example to download or browse its contents, this attribute gives the corresponding URI.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <reference>
+          <vodml-id>resource.dal.AccessibleResource.resource</vodml-id>
+          <name>resource</name>
+          <description>This reference points to the SimDM/Resource that this SimDM/AccessibleResource class associates to the SimDM/Service. The end point can be any SimDM/Resource.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.Resource</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.dal.CustomService</vodml-id>
+        <name>CustomService</name>
+        <description>The CustomService class represents a custom SimDM/Service for accessing SimDM/Resource-s. It is not assumed that a predefined protocol is implemented. Its main role is to distinnguish it from SimDAL and other services implementing potential, future IVOA standards. 
+But many interesting custom services giving access to simulation results exist and can be reistered and discovered through this class.</description>
+        <extends>
+          <vodml-ref>SimDM:resource.dal.Service</vodml-ref>
+        </extends>
+      </objectType>
+
+      <objectType abstract="true">
+        <vodml-id>resource.dal.Service</vodml-id>
+        <name>Service</name>
+        <description>This class represents a web service that can be used to access SimDM/Resource-s registered in for example a SimDB. The precise way in which the web service gives access to these results not specified in detail. It includes simple downloads, and services implementing standards such as SimDAL. 
+SimDM/Service is related to SimDM/Resource and can be used for more general purposes than simply giving access to results of a single experiment. It may be a web service that can handle results of any experiment performed by a particular SimDM/Protocol, or give access to all resources in a SimDM/Project.
+
+The main goal of introducing SimDM/Service in the model is so that users can find web services based on requests for specific tyes of simulations etc. For example users may wish to find web services giving access to hydro simulations of clusters of galaxies with particular properties.
+.
+It is assumed that web services registerd in a SimDB are also registered in a Registry which will store the more detailed capbilitieis and other service metadata. Therefore such details are not introduced here.</description>
+        <extends>
+          <vodml-ref>SimDM:resource.Resource</vodml-ref>
+        </extends>
+        <attribute>
+          <vodml-id>resource.dal.Service.baseURL</vodml-id>
+          <name>baseURL</name>
+          <description>The base URL of this SimDM/Service.
+In case the web service implements a standard IVOA protocol such as SimDAL, this base URL can be used in the same way as other typical IVOA S*AP services. Parameters defined by the standard  may be added to the base URL so that a proper HTTP GET request can be created for accessing the web service directly.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.dal.Service.registryId</vodml-id>
+          <name>registryId</name>
+          <description>The IVO identifier by which this service is registered in an IVOA Resource Registry. Each SimDM/Service should be registered in such a registry and this identifier allows one to obtain the full description of this service as defined by the Registry standard.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <composition>
+          <vodml-id>resource.dal.Service.resource</vodml-id>
+          <name>resource</name>
+          <description>Collection of SimDM/AccessibleResource that reference SimDM/Resource-s that are made available in this SimDM/Service.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.dal.AccessibleResource</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.dal.SimDALService</vodml-id>
+        <name>SimDALService</name>
+        <description>Represents a SimDM/Service conforming to a SimDAL protocol.
+This is a place holder class that may in future version of the model be defined in more detail when SimDAL services themselves have been fully specified.</description>
+        <extends>
+          <vodml-ref>SimDM:resource.dal.Service</vodml-ref>
+        </extends>
+      </objectType>
+
+    </package>
+
+
+
+    <package>
+      <vodml-id>resource.experiment</vodml-id>
+      <name>experiment</name>
+      <description>This package contains the SimDM/Experiment class, its subclasses and and other types contained by these. It is a sub-package of the resource package. </description>
+      <enumeration>
+        <vodml-id>resource.experiment.Statistic</vodml-id>
+        <name>Statistic</name>
+        <description>This enumeration lists possible statistics that can be used to characterise a collection of Property-s in a result. The literals in this enumeration in general correspond to the result of simple statistical operation on this collection (when a posteriori) or on the corresponding operation on the a priori probability distribtion (assuming this can be defined) of its values.
+
+There is overlap between this enumeration and the 'stat' family of UCDs in the UCD controlled vocabulary (http://www.ivoa.net/Documents/REC/UCD/UCDlist-20070402.html). Where this enumeration is used one might consider using a vocabulary based on those terms.</description>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.value</vodml-id>
+          <name>value</name>
+          <description>In case an output data set contains exactly 1 object, the value statistic should be used to indicate the actual property value.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.nominal</vodml-id>
+          <name>nominal</name>
+          <description>A typical value, as judged by the publisher of the results. May not correspond to a predefined statistical operation such as mean or mode.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.min</vodml-id>
+          <name>min</name>
+          <description>Represents the minimum  ('possible' if a priori, 'attained' if a osteriori) value for the characterised property.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.max</vodml-id>
+          <name>max</name>
+          <description>Represents the maximum  ('possible' if a priori, 'attained' if a osteriori) value for the characterised property.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.mode</vodml-id>
+          <name>mode</name>
+          <description>Represents the mode of the distribution  ('expected' if a priori, 'attained' if a posteriori)  for the characterised property.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.mean</vodml-id>
+          <name>mean</name>
+          <description>Represents the mean  ('expected' if a priori, 'attained' if a posteriori) value for the characterised property.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.median</vodml-id>
+          <name>median</name>
+          <description>Represents the median of a distribution.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.stdev</vodml-id>
+          <name>stdev</name>
+          <description>Represents the expected/attained standard deviation for the characterised property.</description>
+        </literal>
+        <literal>
+          <vodml-id>resource.experiment.Statistic.variance</vodml-id>
+          <name>variance</name>
+          <description>Represents the expected/attained variance for the characterised property.</description>
+        </literal>
+      </enumeration>
+
+      <objectType>
+        <vodml-id>resource.experiment.AppliedAlgorithm</vodml-id>
+        <name>AppliedAlgorithm</name>
+        <description>The AppliedAlgorithm class represents the application of a particular algorithm in an experiment.
+Some simulation codes allow one to choose between different algorithms for representing a particular process. For example some N-Body codes allow one to choose between Tree-only or Tree+ParticleMesh codes. 
+To indicate which algorithms were actually used in an experiment one adds an instance of this AppliedAlgorithm class to the collection on the experiment.</description>
+        <reference>
+          <vodml-id>resource.experiment.AppliedAlgorithm.algorithm</vodml-id>
+          <name>algorithm</name>
+          <description>Reference to the actual algorithm that is applied</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.Algorithm</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.AppliedPhysics</vodml-id>
+        <name>AppliedPhysics</name>
+        <description>The AppliedPhysics class represents the association between a physical process on a Simulator and this class' parent Simulation. 
+Many simulation codes allow one to turn on or off modules corresponding to  different physics. For example certain SPH codes allow one to turn off the hydrodynamics, leaving only gravity as the physical process being simulated.</description>
+        <reference>
+          <vodml-id>resource.experiment.AppliedPhysics.physics</vodml-id>
+          <name>physics</name>
+          <description>Reference to the Simulator's Physcis module that is used in the Simulation.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.Physics</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.DataObject</vodml-id>
+        <name>DataObject</name>
+        <description>Represents an individual object of a given object type produced by an experiment. Is required if we want to represent object-object collection hierarchies. NB the name DataObject is used iso Object, as the latter may lead to name clashes in serialisations.
+
+In this model any artefact produced by a Protocol can be represented by an appropriate ObjectType and relations can exist between them. Some of these relations are many-to-one, i.e. between object collections and parent ojects. If such relations must also be represented in the output of an Experiment, it must be possible to represent individual objects.
+
+A typical example is a cosmological simulation produccing N &gt; 1 snapshots. We may want to represent each individual snapshot in the result, together with statistical information about the collections of particles contained in each.
+
+The object can give values to properties related to objects of its type.
+
+In principlpe this model now would allow one to describe an experiment in all details, with each individual object listed. This is as should be for a conceptual model, but in particular applications we envision that limits be put on the size of results. For example it does not make sense to store the complete results of a large cosmolgical simulation in this way, as the storage of property values is inefficient. 
+</description>
+        <composition>
+          <vodml-id>resource.experiment.DataObject.property</vodml-id>
+          <name>property</name>
+          <description>
+          TODO : Missing description : please, update your UML model asap.
+        </description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.PropertyValue</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.experiment.DataObject.collection</vodml-id>
+          <name>collection</name>
+          <description>
+          TODO : Missing description : please, update your UML model asap.
+        </description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.ObjectCollection</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.experiment.DataObject.reference</vodml-id>
+          <name>reference</name>
+          <description>
+          TODO : Missing description : please, update your UML model asap.
+        </description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.ObjectReference</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </composition>
+      </objectType>
+
+      <objectType abstract="true">
+        <vodml-id>resource.experiment.Experiment</vodml-id>
+        <name>Experiment</name>
+        <description>The SimDM/Experiment represents the execution of a computer program represented by a SimDM/Protocol. It defines how the program was run by providing values to parameters for example. It describes the goal of the experiment in terms of the physical objects and processes that are being simulated and it contains the collection of results.</description>
+        <extends>
+          <vodml-ref>SimDM:resource.Resource</vodml-ref>
+        </extends>
+        <attribute>
+          <vodml-id>resource.experiment.Experiment.executionTime</vodml-id>
+          <name>executionTime</name>
+          <description>The date/time at which the experiment was completed</description>
+          <datatype>
+            <vodml-ref>ivoa:datetime</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <composition>
+          <vodml-id>resource.experiment.Experiment.parameter</vodml-id>
+          <name>parameter</name>
+          <description>The collection of ParameterSetting objects that describe the values assigned to parameters of the Protocol used in the execution of this Experiment.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.ParameterSetting</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.experiment.Experiment.inputData</vodml-id>
+          <name>inputData</name>
+          <description>The collection of InputData objects, indicating results of other Esperiments that may have been used in the execution of this Experiment.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.InputDataset</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.experiment.Experiment.appliedAlgorithm</vodml-id>
+          <name>appliedAlgorithm</name>
+          <description>Collection of  AppliedAlgorithm objects, indicating which Algorithms available on a Protocl were used in the execution of the Experiment.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.AppliedAlgorithm</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.experiment.Experiment.outputData</vodml-id>
+          <name>outputData</name>
+          <description>The collection of SimDM/OutputDataset-s created by a SimDM/Experimental.
+We anticipate that experiments produce data sets of different SimDM/OutputDataObjectType-s. For each of these types a separate SimDM/OutputDataset, is provided on the SimDM/Experiment.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.OutputDataset</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <reference>
+          <vodml-id>resource.experiment.Experiment.protocol</vodml-id>
+          <name>protocol</name>
+          <description>Reference to the Protocol used in the exeuciton of this Experiment. 
+Subclasses of this Experiment will in general override/"subset" this reference to subclasses of Protocol.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.Protocol</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.InputDataObject</vodml-id>
+        <name>InputDataObject</name>
+        <description>Associates an individual Object to an InputDataSet.
+Thus if for example only 3 individual snapshots out of a collection of N snapshots produced by a cosmological simulation are post-processed, the actual snapshots used can be indicated using this associative object.</description>
+        <reference>
+          <vodml-id>resource.experiment.InputDataObject.object</vodml-id>
+          <name>object</name>
+          <description>Reference to an actual object that is being used in an experiment.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.DataObject</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.InputDataset</vodml-id>
+        <name>InputDataset</name>
+        <description>Many experiments require pre-existing data sets for their execution.
+This class represents such an association for its parent SimDM/Experiment. 
+It is assumed to contain 1 or more objects of a specified SimDM/InputDataObjectType defined on the SimDM/Protocol used by the container SimDM/Experiment.
+In those cases where the actual input data set is represented by a SimDM/OutputDataset, for example in a SimDB, we can represent the input data by a corresponding reference.  Whereas that would be optimal, it may not always be practical. In cases where this is not so, this reference is replaced with an accessURL attribute on this class. This would allow a user to find out whether a product exists in the database with that same url, make the link indirect but arguably more correct. 
+ </description>
+        <attribute>
+          <vodml-id>resource.experiment.InputDataset.description</vodml-id>
+          <name>description</name>
+          <description>Describes the role that the input data set plays in the experiment.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.InputDataset.url</vodml-id>
+          <name>url</name>
+          <description>URL by which the input data set can be obtained.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <composition>
+          <vodml-id>resource.experiment.InputDataset.object</vodml-id>
+          <name>object</name>
+          <description>Collection of object associations that identify explicitly which objects from a collection of objects are used as input data in an experiment.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.InputDataObject</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <reference>
+          <vodml-id>resource.experiment.InputDataset.product</vodml-id>
+          <name>product</name>
+          <description>The SimDM/OutputDataset produced by an earlier SimDM/Experiment that is used as input data for the current one.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.OutputDataset</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+        <reference>
+          <vodml-id>resource.experiment.InputDataset.type</vodml-id>
+          <name>type</name>
+          <description>Reference to the type definition for this SimDM/InputDataset. This must refer to a SimDM/InputDataObjectType defined on the SimDM/Protocol according to which the SimDM/Experiment is performed.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.InputDataObjectType</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.ObjectCollection</vodml-id>
+        <name>ObjectCollection</name>
+        <description>Instance of a composition Relationship between an ObjectType and a collection of objects. </description>
+        <reference>
+          <vodml-id>resource.experiment.ObjectCollection.collection</vodml-id>
+          <name>collection</name>
+          <description>
+          TODO : Missing description : please, update your UML model asap.
+        </description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.OutputDataset</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+        <reference>
+          <vodml-id>resource.experiment.ObjectCollection.collectionDefinition</vodml-id>
+          <name>collectionDefinition</name>
+          <description>reference to the relationship definition on the ObjectType that is represented by the ObjectCollection. The referenced Relationship MUST have relationshipType='composition'.</description>
+          <datatype>
+            <vodml-ref>SimDM:object.Relationship</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.ObjectReference</vodml-id>
+        <name>ObjectReference</name>
+        <description>Instance of a reference Relationship between two ObjectType-s. </description>
+        <reference>
+          <vodml-id>resource.experiment.ObjectReference.object</vodml-id>
+          <name>object</name>
+          <description>The object referenced by the ObjectReference's parent DataObject. </description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.DataObject</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+        <reference>
+          <vodml-id>resource.experiment.ObjectReference.referenceDefinition</vodml-id>
+          <name>referenceDefinition</name>
+          <description>Reference to the relationship definition on the ObjectType that is represented by the ObjectReference. The referenced Relationship MUST have relationshipType='reference'.</description>
+          <datatype>
+            <vodml-ref>SimDM:object.Relationship</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.OutputDataset</vodml-id>
+        <name>OutputDataset</name>
+        <description>This class represents 1 or more instances of a single SimDM/OutputDataObjectType-s produced by an SimDM/Experiment. 
+No assumption is made how a SimDM/OutputDataset is represented in the real world. It may consist of one or multiple files, or possibly one or more tables in a database, or subsets thereof. The exact storage is not currently modelled.
+The class represents an actual collection of objects without (necessarily) listing these all. Instead it is to be used to allow statistical summaries/characterisation of these products.
+A special feature is that a SimDM/OutputDataset may define a dependency on another, 'parent' data set. This reflects to possibility in the SimDM/Protocol to model relationships between different SimDM/OutputDataObjectType-s. 
+This is implemented using two references, one to the parent SimDM/OutputDataset, the other to the SimDM/Relationship.</description>
+        <attribute>
+          <vodml-id>resource.experiment.OutputDataset.numberOfObjects</vodml-id>
+          <name>numberOfObjects</name>
+          <description>Gives the number of objects in this SimDM/OutputDataset</description>
+          <datatype>
+            <vodml-ref>ivoa:integer</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.OutputDataset.accessURL</vodml-id>
+          <name>accessURL</name>
+          <description>Represents an optional reference to a URL from which the SimDM/OutputDataset can be obtained. No statement is made on whether this should represent a simple file for download, or a link to a web page with information how to obtain it.
+</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <composition>
+          <vodml-id>resource.experiment.OutputDataset.characterisation</vodml-id>
+          <name>characterisation</name>
+          <description>This collection contains the SimDM/StatisticalSummary of the different SimDM/Property-s of the objects in the parent's SimDM/OutputDataset. 
+</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.StatisticalSummary</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.experiment.OutputDataset.object</vodml-id>
+          <name>object</name>
+          <description>
+          TODO : Missing description : please, update your UML model asap.
+        </description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.DataObject</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <reference>
+          <vodml-id>resource.experiment.OutputDataset.objectType</vodml-id>
+          <name>objectType</name>
+          <description>This reference to SimDM/DataObjectType indicates the type of data object stored in this collection.</description>
+          <datatype>
+            <vodml-ref>SimDM:object.ObjectType</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.ParameterSetting</vodml-id>
+        <name>ParameterSetting</name>
+        <description>To run an Experiment, one usually needs to assign values to parameters defined on the corresponding Protocol. This class makes the association between the Experiment and the parameters, indicating which parameter is given what value. 
+
+Input parameters can be given any datatype from the DataType enumeration and hence it is in principle impossible to assign a single datatype to the value attribute storing the parameter setting in this model. Whereas we might use a generic string data type, this will in many implementations limit the use of query expressions that one might use for numerical values for example. 
+
+As a work around the current design has two attributes, one of type real, one of type string. The former should be used for numerical InputParanmeters, the latter for all others.</description>
+        <attribute>
+          <vodml-id>resource.experiment.ParameterSetting.stringValue</vodml-id>
+          <name>stringValue</name>
+          <description>Attribute that holds on to the actual parameter value in case the referenced input parameter is not a numerical type.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.ParameterSetting.numericValue</vodml-id>
+          <name>numericValue</name>
+          <description>Attribute that holds on to the actual parameter value in case the referenced input parameter is a numerical type.</description>
+          <datatype>
+            <vodml-ref>ivoa:RealQuantity</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <reference>
+          <vodml-id>resource.experiment.ParameterSetting.inputParameter</vodml-id>
+          <name>inputParameter</name>
+          <description>Reference to the actual input parameter whose value is being set.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.InputParameter</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.PostProcessing</vodml-id>
+        <name>PostProcessing</name>
+        <description>Represents an experiment that corresponds to the execution of a PostProcessor protocol. It  manipulates a pre-existing result to produce new results, but without introducing new physics.</description>
+        <extends>
+          <vodml-ref>SimDM:resource.experiment.Experiment</vodml-ref>
+        </extends>
+        <constraint xsi:type="vo-dml:SubsettedRole">
+          <role>
+            <vodml-ref>SimDM:resource.experiment.Experiment.protocol</vodml-ref>
+          </role>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.PostProcessor</vodml-ref>
+          </datatype>
+        </constraint>
+        <reference>
+          <vodml-id>resource.experiment.PostProcessing.primaryExperiment</vodml-id>
+          <name>primaryExperiment</name>
+          <description>The primary experiment whose results are being post-processed by this PostProcessing step. Simplifies looking up the original experiments, but is in principle redundant with the inputData.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.Experiment</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.PropertyValue</vodml-id>
+        <name>PropertyValue</name>
+        <description>Assign a value to a property of a data object.</description>
+        <attribute>
+          <vodml-id>resource.experiment.PropertyValue.stringValue</vodml-id>
+          <name>stringValue</name>
+          <description>If the Property to which this value is assigned is not numeric, this attribute should be used to represent the value.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.PropertyValue.numericValue</vodml-id>
+          <name>numericValue</name>
+          <description>It the property to which this value is assigned is numerical, use this attribute to represent the value.</description>
+          <datatype>
+            <vodml-ref>ivoa:RealQuantity</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <reference>
+          <vodml-id>resource.experiment.PropertyValue.property</vodml-id>
+          <name>property</name>
+          <description>The property to which the value is assigned.</description>
+          <datatype>
+            <vodml-ref>SimDM:object.Property</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.Simulation</vodml-id>
+        <name>Simulation</name>
+        <description>This class represents the execution of simulation codes. Its protocol is therefore a SimDM/Simulator iso a general SimDM/Protocol. It extends SimDM/Experiment by adding descriptions of the physical processes that were simulated</description>
+        <extends>
+          <vodml-ref>SimDM:resource.experiment.Experiment</vodml-ref>
+        </extends>
+        <constraint xsi:type="vo-dml:SubsettedRole">
+          <role>
+            <vodml-ref>SimDM:resource.experiment.Experiment.protocol</vodml-ref>
+          </role>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.Simulator</vodml-ref>
+          </datatype>
+        </constraint>
+        <composition>
+          <vodml-id>resource.experiment.Simulation.appliedPhysics</vodml-id>
+          <name>appliedPhysics</name>
+          <description>This collections associates this SimDM/Simulation to the SimDM/Simulator's SimDM/Physics that was actually used. This element represents the possibility in most simulator codes to turn on or off specific physical processes in a simulation run. Examples are the option to have a pure dark matter simulation in an SPH code. Or a hydro code without gravity.
+The collection of SimDM/AppliedPhysics objects references thos modules that were actually used.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.AppliedPhysics</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.experiment.StatisticalSummary</vodml-id>
+        <name>StatisticalSummary</name>
+        <description>This class allows users to provide a statistical characterisation of a collection of objects in a specified SimDM/OutputDataset. It represents both 'a priori' and 'a posteriori' characterisations. With a priori characterisation we indicate possible and/or nominal [?] values the variable may take, it defines the possible range of values of the SimDM/Property. In contrast, an a posteriori characterisation of a property in an collection provides summarising, likely statistical, information on the values that were actually measured (i.e. observed, simulated) by the objects in the collection.
+The a priori characterisation is most similar, in fact a generalisation of the Characterisation model of the IVOA Data Model working group. 
+ 
+In the current model we stick to simple (numerical) quantities for characterising a collection of objects. For example the equivalent value of a support from the CharacterisationDM is absent, as it is not terribly useful for discovery and querying, even more so of course for concepts equivalent to sensitivity. </description>
+        <attribute>
+          <vodml-id>resource.experiment.StatisticalSummary.statistic</vodml-id>
+          <name>statistic</name>
+          <description>This attribute indicates which statistic is used to statistically summarise the referenced SimDM/ObjectType's SimDM/Property.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.experiment.Statistic</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.StatisticalSummary.aPriori</vodml-id>
+          <name>aPriori</name>
+          <description>If 'true', this attribute indicates that the statistical characterisation of a SimDM/Propertyis aPriori. That is it indicates that the value says something about what the publisher believes are the possible values the SimDM/Property can assume. An "p priori" characterisation is therefore a translation of the effects that the input configuration (SimDM/ParameterSetting, SimDM/InputDataset), the  "provenance-of-the-actual-experiment" therefore) is EXPECTED to have on the final result, represented by the SimDM/OutputDataset-s and the SimDM/Property-s of their constituent objects.
+
+Alternatively, if the value is "false", it indicates that the statistical charecterisation is 'a posteriori', i.e. it says something about the actual values that were assumed. This requires in general some level of post processing beyond simply storing the result, but in general using simple statistics such as mean and standard deviation that are not modelled as a separate SimDM/Experiment.</description>
+          <datatype>
+            <vodml-ref>ivoa:boolean</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.StatisticalSummary.numericValue</vodml-id>
+          <name>numericValue</name>
+          <description>Summarising value of a numerical SimDM/Property in a collection of objects</description>
+          <datatype>
+            <vodml-ref>ivoa:RealQuantity</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.experiment.StatisticalSummary.stringValue</vodml-id>
+          <name>stringValue</name>
+          <description>In case a string-typed property is summarised this attribute should be used to give the value. This would likely be applicable to a restricted set of statistics such as nominal value.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <reference>
+          <vodml-id>resource.experiment.StatisticalSummary.axis</vodml-id>
+          <name>axis</name>
+          <description>The SimDM/Property of the SimDM/ObjectType that is being characterised.
+In the IVOA DM's characterisation model this is represented by specified objects, such as spatialaxis, timeaxis etc. Here we do not know in advance which kind of property is characterised, hence this explicit reference.</description>
+          <datatype>
+            <vodml-ref>SimDM:object.Property</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+    </package>
+
+
+
+    <package>
+      <vodml-id>resource.protocol</vodml-id>
+      <name>protocol</name>
+      <description>This package contains the SimDM/Protocol and classes used in its definition.</description>
+      <objectType>
+        <vodml-id>resource.protocol.Algorithm</vodml-id>
+        <name>Algorithm</name>
+        <description>This class represents numerical algorithms available in a SimDM/Protocol. 
+In Simulators an algorithm may approximate a physical process. Examples from cosmological simulations are different algorithms to implement gravity: direct particle-particle interaction, particle-mesh, or various types of tree based algorithms.
+In post-processors such as cluster finder this class can represent a partiular cluster definition such as friends-of-friends or spherical overdensity.
+</description>
+        <attribute>
+          <vodml-id>resource.protocol.Algorithm.name</vodml-id>
+          <name>name</name>
+          <description>A common name given to this algorithm.
+</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.protocol.Algorithm.description</vodml-id>
+          <name>description</name>
+          <description>Short description of this algorithm.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.protocol.Algorithm.label</vodml-id>
+          <name>label</name>
+          <description>Short name by which this algorithm is known in the SKOS vocabulary of numerical algorithms.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+          <semanticconcept>
+            <topConcept>http://purl.org/astronomy/vocab/Algorithms/Algorithm</topConcept>
+            <vocabularyURI>http://purl.org/astronomy/vocab/Algorithms</vocabularyURI>
+          </semanticconcept>
+        </attribute>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.InputDataObjectType</vodml-id>
+        <name>InputDataObjectType</name>
+        <description>Type of data objects that the protocol needs in its execution.</description>
+        <extends>
+          <vodml-ref>SimDM:object.ObjectType</vodml-ref>
+        </extends>
+        <attribute>
+          <vodml-id>resource.protocol.InputDataObjectType.label</vodml-id>
+          <name>label</name>
+          <description>Label indicating the type of data object represented by this InputDataObjectType through reference to a SKOS concept.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+          <semanticconcept>
+            <topConcept>http://purl.org/astronomy/vocab/DataObjectTypes/DataObjectType</topConcept>
+            <vocabularyURI>http://purl.org/astronomy/vocab/DataObjectTypes</vocabularyURI>
+          </semanticconcept>
+        </attribute>
+        <reference>
+          <vodml-id>resource.protocol.InputDataObjectType.definition</vodml-id>
+          <name>definition</name>
+          <description>If not null, this reference provides the definition of the input data object type as being a predefined SimDM/OutputDataObjectType of another SimDM/Protocol.
+It's implication is that the current SimDm/Protocol requires the results of another SimDM/Protocol for its execution.
+If this reference is null the input data object type must be defined using the properties inherited from the base object type.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.OutputDataObjectType</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.InputParameter</vodml-id>
+        <name>InputParameter</name>
+        <description>This class represent an input parameter on a protocol.
+In general,a simulation codes needs the user to set values to parameters that govern the running of the code. These may be parameters describing the physics in a simulation, or they may be numerical parameters governing the approximation of the process by a particular algorithm. </description>
+        <extends>
+          <vodml-ref>SimDM:object.Field</vodml-ref>
+        </extends>
+        <constraint>
+          <description/>
+        </constraint>
+        <attribute>
+          <vodml-id>resource.protocol.InputParameter.label</vodml-id>
+          <name>label</name>
+          <description>A label to be given to this input parameter from an appropriate SKOS vocabulary.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+          <semanticconcept>
+            <topConcept>http://purl.org/astronomy/vocab/Parameters/Parameter</topConcept>
+            <vocabularyURI>http://purl.org/astronomy/vocab/PhysicalQuantities</vocabularyURI>
+            <vocabularyURI>http://purl.org/astronomy/vocab/Parameters</vocabularyURI>
+          </semanticconcept>
+        </attribute>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.OutputDataObjectType</vodml-id>
+        <name>OutputDataObjectType</name>
+        <description>This class represents the type of data object that the container SimDM/Protocol can produce. 
+This concept includes any type of data object the protocol deals with.
+It can range from the smallest data units such as individual N-Body particles or pixels in a synthetic spectrum, up to the largest which may be a collection of snapshots in an N-body simulation ,each of them containing collections of particles.
+It defines also the actual SimDM/OutputDataset-s that a SimDM/Experiment's has produced. 
+Since a SimDM/OutputDataObjectType is-a SimDM/ObjectType, it can be related to other objects using SimDM/Relationship-s.
+ In this way a hierarchy of data types can be described.
+For example a spectrum can be a such a data object and will be composed of pixels. A FOF group catalogue will be composed of FOF groups which are aggregations of particles. </description>
+        <extends>
+          <vodml-ref>SimDM:object.ObjectType</vodml-ref>
+        </extends>
+        <attribute>
+          <vodml-id>resource.protocol.OutputDataObjectType.label</vodml-id>
+          <name>label</name>
+          <description>Name that this type of particle is given in an appropriate SKOS vocabulary.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+          <semanticconcept>
+            <topConcept>http://purl.org/astronomy/vocab/DataObjectTypes/DataObjectType</topConcept>
+            <vocabularyURI>http://purl.org/astronomy/vocab/DataObjectTypes</vocabularyURI>
+          </semanticconcept>
+        </attribute>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.ParameterGroup</vodml-id>
+        <name>ParameterGroup</name>
+        <description>Represents a (natural) grouping of SimDM/InputParameters.
+Especially in protocols with large numbers of parameters it may be useful to group these
+for browsing purposes for example. As browsing is likely an important mode of access to  SimDM/Resource-s stored in a SimDB for example, this possibility was introduced.
+But the main use should be reserved for semantic groupings. For example all parameters together defining the cosmology a certain simulation is run in. Or the parameters setting "merely" numerical properties such as smoothing lengths.</description>
+        <attribute>
+          <vodml-id>resource.protocol.ParameterGroup.name</vodml-id>
+          <name>name</name>
+          <description>Name given to this group.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.protocol.ParameterGroup.description</vodml-id>
+          <name>description</name>
+          <description>Short description of the purpose of this group.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <composition>
+          <vodml-id>resource.protocol.ParameterGroup.member</vodml-id>
+          <name>member</name>
+          <description>Collection of associative member objects, indicating which parameter is part of the group.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.ParameterGroupMember</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.ParameterGroupMember</vodml-id>
+        <name>ParameterGroupMember</name>
+        <description>Associative class, representing a selection of a parameter in a parameter grouping.</description>
+        <reference>
+          <vodml-id>resource.protocol.ParameterGroupMember.parameter</vodml-id>
+          <name>parameter</name>
+          <description>Reference to the selected input parameter.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.InputParameter</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </reference>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.Physics</vodml-id>
+        <name>Physics</name>
+        <description>This class represents a physical processes that is modelled in a simulation code.
+Simulating a physical process generally corresponds to solving equations of motion numerically, evolving the simulated system from one state to the next.</description>
+        <attribute>
+          <vodml-id>resource.protocol.Physics.name</vodml-id>
+          <name>name</name>
+          <description>Name by which this physical process is represented  in the simulator code</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.protocol.Physics.description</vodml-id>
+          <name>description</name>
+          <description>Short description of the physical process represented by this class.</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.protocol.Physics.label</vodml-id>
+          <name>label</name>
+          <description>The SKOS concept identifying this process in a standardised SKOS vocabulary.</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+          <semanticconcept>
+            <topConcept>http://purl.org/astronomy/vocab/PhysicalProcesses/PhysicalProcess</topConcept>
+            <vocabularyURI>http://purl.org/astronomy/vocab/PhysicalProcesses</vocabularyURI>
+          </semanticconcept>
+        </attribute>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.PostProcessor</vodml-id>
+        <name>PostProcessor</name>
+        <description>This concrete subclass of SimDM/Protocol represents protocols that deal with post-processing results of earlier experiments. We do not specify the details of this type much further. Main difference with eg the SimDM/Simulator type is that NO new physical processes are introduced/simulated in the processing of the previous results. Examples are cluster finders, visualisation tools etc. </description>
+        <extends>
+          <vodml-ref>SimDM:resource.protocol.Protocol</vodml-ref>
+        </extends>
+      </objectType>
+
+      <objectType abstract="true">
+        <vodml-id>resource.protocol.Protocol</vodml-id>
+        <name>Protocol</name>
+        <description>A SimDM/Protocol represents software code that can be used to run astrophysical simulations or to post-process simulation results. A SimDM/Protocol defines the method by which SimDM/Experiment-s can be performed, like a blue-print, or template.  The SimDM/Protocol concept is separated out from the execution of its code in SimDM/Experiment, which allows us to reuse it for all experiments using the same code.
+The concept is a direct gemeralisation of the concept by the same name in Martin Fowler's book "Analysis Patterns: Reusable Object Models" (Addison-Wesley Professional, 1996).</description>
+        <extends>
+          <vodml-ref>SimDM:resource.Resource</vodml-ref>
+        </extends>
+        <attribute>
+          <vodml-id>resource.protocol.Protocol.code</vodml-id>
+          <name>code</name>
+          <description>link where the code can be downloaded, if available
+</description>
+          <datatype>
+            <vodml-ref>ivoa:anyURI</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <attribute>
+          <vodml-id>resource.protocol.Protocol.version</vodml-id>
+          <name>version</name>
+          <description>the version of the simulator code that was used</description>
+          <datatype>
+            <vodml-ref>ivoa:string</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>1</maxOccurs>
+          </multiplicity>
+        </attribute>
+        <composition>
+          <vodml-id>resource.protocol.Protocol.algorithm</vodml-id>
+          <name>algorithm</name>
+          <description>This collection indicates which algorithms are available on the protocol.
+</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.Algorithm</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.protocol.Protocol.parameter</vodml-id>
+          <name>parameter</name>
+          <description>Collection of input parameters for this protocol.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.InputParameter</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.protocol.Protocol.parameterGroup</vodml-id>
+          <name>parameterGroup</name>
+          <description>Collection of parameter groups. This is a utility colection, indicating that a particular grouping of parameters is natural. Useful for browsing the protocol's contents.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.ParameterGroup</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.protocol.Protocol.inputType</vodml-id>
+          <name>inputType</name>
+          <description>Collection of object types that the Protocol may need for its execution.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.InputDataObjectType</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+        <composition>
+          <vodml-id>resource.protocol.Protocol.outputType</vodml-id>
+          <name>outputType</name>
+          <description>The collection of SimDM/OutputDataObjectType-s that can be produced by the parent SimDM/Protocol.</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.OutputDataObjectType</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>0</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+      </objectType>
+
+      <objectType>
+        <vodml-id>resource.protocol.Simulator</vodml-id>
+        <name>Simulator</name>
+        <description>This class represents the simulation software that one uses to run a simulation. It is a special case of a SimDM/Protocol.
+It is different from other SimDM/Protocols in that it explicitly defines the physical processes that are (can be) simulated. This indeed is the defining characteristic of the SimDM/Simulator: it simulates/models physical processes. This in contrast to a "mere" SimDM/PostProcessor which takes the input data and analyses it without adding new physics. It does not imply that simulators can not use existing results. For example consider semi-analytical galaxy formation routines which work on existing halo (merger) catalogues. 
+
+</description>
+        <extends>
+          <vodml-ref>SimDM:resource.protocol.Protocol</vodml-ref>
+        </extends>
+        <composition>
+          <vodml-id>resource.protocol.Simulator.physicalProcess</vodml-id>
+          <name>physicalProcess</name>
+          <description>Collection of physical processes that can be simulated using this simulator.
+
+</description>
+          <datatype>
+            <vodml-ref>SimDM:resource.protocol.Physics</vodml-ref>
+          </datatype>
+          <multiplicity>
+            <minOccurs>1</minOccurs>
+            <maxOccurs>-1</maxOccurs>
+          </multiplicity>
+        </composition>
+      </objectType>
+
+    </package>
+
+  </package>
+
+</vo-dml:model>
