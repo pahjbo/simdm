@@ -1,4 +1,4 @@
-<m:mappedModels xmlns:m="http://www.ivoa.net/xml/vodml-binding/v0.9">
+<m:mappedModels xmlns:m="http://www.ivoa.net/xml/vodml-binding/v0.9.1">
     <!-- ========================================
     This is a minimal sample file for mapping VO-DML models to XSD or Java using the gradle tooling
      -->
@@ -7,6 +7,6 @@
         <name>SimDM</name>
         <file>SimDM.vo-dml.xml</file>
         <java-package>org.ivoa.dm.simdm</java-package>
-        <xml-targetnamespace prefix="phot">http://ivoa.net/dm/models/vo-dml/xsd/simdm</xml-targetnamespace>
+        <xml-targetnamespace prefix="simdb">http://ivoa.net/dm/models/vo-dml/xsd/simdm</xml-targetnamespace>
     </model>
 </m:mappedModels>
